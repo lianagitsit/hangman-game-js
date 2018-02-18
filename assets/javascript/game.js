@@ -31,6 +31,8 @@ $(document).ready(function () {
     var blanks = [];
     var guessedLetters = [];
     var guessedLettersDiv = document.getElementById("letters-guessed");
+    var guessesRemaining;
+    var guessesRemainingDiv = document.getElementById("guesses-left");
     var gamePlay = false;
 
     var currentWord = words[Math.floor(Math.random() * words.length)];
@@ -49,23 +51,27 @@ $(document).ready(function () {
             for (var i = 0; i < currentWord.length; i++) {
                 blanks.push("_");
             }
-            workingArray = blanks.join(" ");
-            currentWordDiv.textContent = workingArray;
+            guessesRemaining = Math.ceil(currentWord.length += currentWord.length * .33);
         } else {
             // if the letter is NOT in the word...
             if (currentWord.indexOf(letter) === -1) {
-                // and it has NOT already been guessed, push it 
-                if (guessedLetters.indexOf(letter) === -1) {
-                    guessedLetters.push(letter);
-                    guessedLettersDiv.textContent = guessedLetters;
-                } else {
-                    // if it HAS already been guessed, do nothing
+                // if it HAS already been guessed, do nothing
+                if (guessedLetters.indexOf(letter) !== -1) {
                     return;
+                } else {
+                    // if it has NOT already been guessed, push it 
+                    guessedLetters.push(letter.toUpperCase());
+                    guessesRemaining--;
                 }
                 console.log("guessed letters: " + guessedLetters);
             
             // if the letter IS in the word...
             } else {
+                // if it has already been guessed, do nothing
+                if (blanks.indexOf(letter) !== -1){
+                    return;
+                }
+
                 // find the position of the letter in the word
                 var pos = currentWord.indexOf(letter);
 
@@ -74,10 +80,18 @@ $(document).ready(function () {
                     blanks[pos] = letter;
                     pos = currentWord.indexOf(letter, pos + 1);
                 }
+                
+                guessesRemaining--;
             }
-            workingArray = blanks.join(" ");
-            currentWordDiv.textContent = workingArray;
         }
+
+        // Update page displays
+        workingArray = blanks.join(" ");
+        currentWordDiv.textContent = workingArray;
+        guessesRemainingDiv.textContent = guessesRemaining;
+        guessedLettersDiv.textContent = guessedLetters.join(" ");
+
+
 
         // blanks don't generate until the game has been started with a letter press
     }
